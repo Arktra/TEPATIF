@@ -3,6 +3,7 @@ package aps.tepatif
 import CustomCard
 import NewEvent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -90,6 +91,9 @@ fun EditScreen(navController: NavController) {
         remember { mutableStateListOf("Design", "Work", "Personal") } // Daftar kategori
     var newCategoryName by remember { mutableStateOf("") } // Untuk nama kategori baru
     var showCategoryDialog by remember { mutableStateOf(false) } // Untuk kontrol dialog
+
+    val showOptions = remember { mutableStateOf(false) }
+    val selectedReminder = remember { mutableStateOf("None") } // Default reminder is "None"
 
     Box {
         Column(
@@ -316,43 +320,40 @@ fun EditScreen(navController: NavController) {
 
             Card(
                 modifier = Modifier
-                    .fillMaxWidth() // Lebar penuh
-                    .width(327.dp) // Lebar tetap 327dp
-                    .height(72.dp) // Tinggi Card
-                    .clip(RoundedCornerShape(topStart = 16.dp)) // Membuat sudut atas Card melengkung
-                    .alpha(1f) // Mengatur alpha menjadi 1 (sepenuhnya terlihat)
-                    .clickable { /* Action saat Card ditekan */ },
+                    .fillMaxWidth() // Full width
+                    .height(72.dp) // Card height
+                    .clip(RoundedCornerShape(topStart = 16.dp))
+                    .alpha(1f)
+                    .clickable { showOptions.value = true }, // Show options when clicked
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFF8F9FE) // Warna latar belakang Card
+                    containerColor = Color(0xFFF8F9FE)
                 )
             ) {
                 Row(
                     modifier = Modifier.fillMaxSize(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start // Menempatkan elemen-elemen di kiri
+                    horizontalArrangement = Arrangement.Start
                 ) {
-                    // Menampilkan informasi jadwal di kiri
+                    // Left content with reminder label and value
                     Column(
                         modifier = Modifier
-                            .weight(1f) // Menggunakan ruang yang tersisa untuk teks
+                            .weight(1f)
                             .fillMaxHeight()
                             .padding(start = 8.dp),
-                        verticalArrangement = Arrangement.Center, // Menyusun elemen secara vertikal di tengah
-                        horizontalAlignment = Alignment.Start // Menyusun teks di kiri
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Menambahkan gambar di kiri
                             Image(
-                                painter = painterResource(id = R.drawable.ic_reminder), // Ganti dengan id gambar Anda
+                                painter = painterResource(id = R.drawable.ic_reminder), // Reminder Icon
                                 contentDescription = "Reminder Icon",
                                 modifier = Modifier
-                                    .size(48.dp) // Ukuran gambar
-                                    .padding(end = 8.dp) // Jarak antara gambar dan teks
+                                    .size(48.dp)
+                                    .padding(end = 8.dp)
                             )
 
-                            // Teks pada bagian kiri
                             Column {
                                 Text(
                                     text = "Reminder",
@@ -363,7 +364,7 @@ fun EditScreen(navController: NavController) {
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = "None",
+                                    text = selectedReminder.value, // Display the selected reminder
                                     fontSize = 12.sp,
                                     style = MaterialTheme.typography.bodySmall,
                                     color = Color(0xFF71727A)
@@ -375,35 +376,32 @@ fun EditScreen(navController: NavController) {
                     // Spacer untuk memberikan jarak di antara elemen kiri dan tombol kanan
                     Spacer(modifier = Modifier.width(16.dp)) // Menambah jarak 16dp
 
-                    // Tombol Detail di kanan
+                    // Tombol Add di kanan
                     Box(
                         modifier = Modifier
                             .padding(end = 16.dp)
-                            .clip(RoundedCornerShape(12.dp)) // Sudut melengkung pada sisi kanan
-                            .border(
-                                2.dp,
-                                Color(0xFF007BFF),
-                                RoundedCornerShape(12.dp)
-                            ) // Menambahkan border dan warna pada border
+                            .clip(RoundedCornerShape(12.dp))
+                            .border(2.dp, Color(0xFF007BFF), RoundedCornerShape(12.dp))
                             .width(66.dp)
                             .height(40.dp)
-                            .clickable { /* Action untuk detail kanan */ }
-                            .padding(4.dp) // Menambahkan padding sekitar tombol detail
+                            .clickable { showOptions.value = true } // Show dialog on click
                     ) {
-                        // Menampilkan teks pada Card Detail
                         Box(
-                            contentAlignment = Alignment.Center, // Memastikan teks berada di tengah
+                            contentAlignment = Alignment.Center,
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Text(
                                 text = "Add",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF007BFF),
-                            ) // Teks pada Card Detail
+                                color = Color(0xFF006FFD)
+                            )
                         }
                     }
+
+
                 }
+
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -457,6 +455,15 @@ fun EditScreen(navController: NavController) {
                     }
                 },
                 onCancel = { showCategoryDialog = false }
+            )
+        }
+        if (showOptions.value) {
+            ReminderOptions(
+                navController = navController,
+                onDismiss = { showOptions.value = false }, // Dismiss the dialog
+                onConfirm = {
+                    selectedReminder.value = it
+                } // Update selected reminder on confirm
             )
         }
     }
