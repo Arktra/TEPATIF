@@ -1,5 +1,6 @@
 package aps.tepatif
 
+import EventDetail
 import  aps.tepatif.backend.BackEndAuth
 
 import HomeScreen
@@ -43,6 +44,14 @@ class MainActivity : ComponentActivity() {
 
                     composable("new_event_screen") {
                         NewEvent(navController = navController)
+                    }
+
+                    composable("event_detail_screen") {
+                        EventDetail(navController = navController)
+                    }
+
+                    composable("edit_screen") {
+                        EditScreen(navController = navController)
                     }
                 }
             }
