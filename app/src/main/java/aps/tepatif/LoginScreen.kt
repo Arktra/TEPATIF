@@ -33,12 +33,19 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 import androidx.navigation.compose.rememberNavController
+import aps.tepatif.backend.BackEndAuth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var loginError by remember { mutableStateOf<String?>(null) }
+
 
     Column(
         modifier = Modifier
@@ -125,7 +132,18 @@ fun LoginScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         TextButton (
-            onClick = { navController.navigate("home_screen") },
+            onClick = { CoroutineScope(Dispatchers.IO).launch {
+                val user = backEndAuth.login(email, password)
+                if (user != null) {
+                    withContext(Dispatchers.Main) {
+                        navController.navigate("home_screen")
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        loginError = "Login failed. Please check your credentials."
+                    }
+                }
+            } },
             modifier = Modifier
                 .fillMaxWidth()
                 .width(327.dp)
@@ -138,6 +156,14 @@ fun LoginScreen(navController: NavController) {
             )
         ) {
             Text("Login")
+        }
+
+        loginError?.let {
+            Text(
+                text = it,
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -213,5 +239,5 @@ fun LoginScreen(navController: NavController) {
 @Composable
 fun LoginScreenPreview() {
     val navController = rememberNavController()
-    LoginScreen(navController = navController)
+    LoginScreen(navController = navController, backEndAuth = BackEndAuth())
 }

@@ -48,21 +48,28 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import aps.tepatif.backend.BackEndAuth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
-fun SignUpScreen(navController: NavController) {
+fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var isChecked by remember { mutableStateOf(false) }
+    var registerError by remember { mutableStateOf<String?>(null) }
+    val backEndAuth = BackEndAuth()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
@@ -79,16 +86,16 @@ fun SignUpScreen(navController: NavController) {
             text = "Create an account to get started",
             color = Color(0xFF71727A),
             modifier = Modifier
-                .fillMaxWidth() // Memastikan teks mengambil seluruh lebar layar
-                .padding(bottom = 8.dp) // Memberikan jarak vertikal untuk estetika
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
         )
 
         Text(
             text = "Name",
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .fillMaxWidth() // Memastikan teks mengambil seluruh lebar layar
-                .padding(top = 8.dp) // Memberikan jarak vertikal untuk estetika
+                .fillMaxWidth()
+                .padding(top = 8.dp)
         )
 
         OutlinedTextField(
@@ -104,8 +111,8 @@ fun SignUpScreen(navController: NavController) {
             text = "Email Address",
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .fillMaxWidth() // Memastikan teks mengambil seluruh lebar layar
-                .padding(top = 16.dp) // Memberikan jarak vertikal untuk estetika
+                .fillMaxWidth()
+                .padding(top = 16.dp)
         )
 
         OutlinedTextField(
@@ -121,8 +128,8 @@ fun SignUpScreen(navController: NavController) {
             text = "Password",
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .fillMaxWidth() // Memastikan teks mengambil seluruh lebar layar
-                .padding(top = 16.dp) // Memberikan jarak vertikal untuk estetika
+                .fillMaxWidth()
+                .padding(top = 16.dp)
         )
 
         OutlinedTextField(
@@ -146,8 +153,8 @@ fun SignUpScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(10.dp))
 
         OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
             label = { Text("Confirm Password") },
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
@@ -170,26 +177,25 @@ fun SignUpScreen(navController: NavController) {
         ) {
             Box(
                 modifier = Modifier
-                    .size(24.dp) // Menentukan ukuran checkbox 24x24px
+                    .size(24.dp)
                     .border(
-                        width = 1.5.dp, // Border 1.5px
-                        color = Color(0xFFC5C6CC), // Warna border sesuai yang diminta (#C5C6CC)
-                        shape = RoundedCornerShape(6.dp) // Border radius 6px pada bagian kiri atas
+                        width = 1.5.dp,
+                        color = Color(0xFFC5C6CC),
+                        shape = RoundedCornerShape(6.dp)
                     )
-                    .clickable { isChecked = !isChecked } // Menangani aksi klik untuk checkbox
-                    .padding(2.dp) // Memberikan sedikit ruang di dalam kotak untuk memperbaiki tampilan
+                    .clickable { isChecked = !isChecked }
+                    .padding(2.dp)
             ) {
                 if (isChecked) {
                     Icon(
-                        imageVector = Icons.Filled.Check, // Gambar ceklis
+                        imageVector = Icons.Filled.Check,
                         contentDescription = "Checked",
-                        tint = Color(0xFF006FFD), // Mengatur warna ceklis
-                        modifier = Modifier.align(Alignment.Center) // Menyelaraskan ikon di tengah
+                        tint = Color(0xFF006FFD),
+                        modifier = Modifier.align(Alignment.Center)
                     )
                 }
             }
 
-            // AnnotatedString untuk membuat teks dengan link
             val annotatedString = buildAnnotatedString {
                 append("I've read and agree with the ")
                 pushStringAnnotation(tag = "terms", annotation = "https://example.com/terms")
@@ -208,13 +214,11 @@ fun SignUpScreen(navController: NavController) {
                 pop()
             }
 
-            // Teks dengan link yang bisa diklik
             ClickableText(
                 text = annotatedString,
                 onClick = { offset ->
                     annotatedString.getStringAnnotations(offset, offset).firstOrNull()?.let {
                         val url = it.item
-                        // Tanggapi URL sesuai dengan tujuan, misalnya menggunakan Intent untuk membuka browser
                         println("Open URL: $url")
                     }
                 },
@@ -222,41 +226,60 @@ fun SignUpScreen(navController: NavController) {
             )
         }
 
-
-
         Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Button(
+                onClick = {
+                    if (password == confirmPassword) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val user = backEndAuth.register(email, password)
+                            if (user != null) {
+                                withContext(Dispatchers.Main) {
+                                    navController.navigate("home_screen")
+                                }
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    registerError = "Registration failed. Please try again."
+                                }
+                            }
+                        }
+                    } else {
+                        registerError = "Passwords do not match."
+                    }
+                },
                 modifier = Modifier
-                    .fillMaxSize() // Mengisi seluruh ruang layar
-                    .padding(16.dp), // Menambahkan padding
-                verticalArrangement = Arrangement.Bottom, // Menempatkan elemen di bagian bawah
-                horizontalAlignment = Alignment.CenterHorizontally // Menyusun elemen secara horizontal di tengah
+                    .fillMaxWidth()
+                    .width(327.dp)
+                    .height(48.dp)
+                    .clip(RoundedCornerShape(topStart = 12.dp))
+                    .alpha(1f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF006FFD),
+                    contentColor = Color.White
+                )
             ) {
-                // Konten lainnya di sini (misalnya, teks, input, dll.)
+                Text("Sign Up")
+            }
 
-                Button(
-                    onClick = { navController.navigate("otp_validation") },
-                    modifier = Modifier
-                        .fillMaxWidth() // Lebar penuh
-                        .width(327.dp) // Lebar tetap 327dp
-                        .height(48.dp) // Tinggi tombol 48dp
-                        .clip(RoundedCornerShape(topStart = 12.dp)) // Membuat sudut atas tombol melengkung
-                        .alpha(1f), // Mengatur alpha menjadi 1 (sepenuhnya terlihat)
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF006FFD), // Warna latar belakang tombol
-                        contentColor = Color.White // Warna konten tombol (teks)
-                    )
-                ) {
-                    Text("Sign Up") // Teks dalam tombol
-                }
+            registerError?.let {
+                Text(
+                    text = it,
+                    color = Color.Red,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
         }
-
     }
-
+}
 
 @Preview(showBackground = true)
 @Composable
 fun SignUpScreenPreview() {
     val navController = rememberNavController()
-    SignUpScreen(navController = navController)
+    SignUpScreen(navController = navController, backEndAuth = BackEndAuth())
 }
