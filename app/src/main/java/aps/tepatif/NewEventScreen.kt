@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,6 +27,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,6 +56,7 @@ fun NewEvent(navController: NavController) {
     var selected = remember { mutableStateOf(false) }
     var eventName by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf("") }
 
     var startDate by remember { mutableStateOf("") }  // Track start date
     var endDate by remember { mutableStateOf("") }    // Track end date
@@ -75,7 +80,15 @@ fun NewEvent(navController: NavController) {
     if (formattedTime.startsWith("0")) {
         formattedTime = formattedTime.substring(1)
     }
-    Box {
+
+    var categories =
+        remember { mutableStateListOf("Design", "Work", "Personal") } // Daftar kategori
+    var newCategoryName by remember { mutableStateOf("") } // Untuk nama kategori baru
+    var showCategoryDialog by remember { mutableStateOf(false) } // Untuk kontrol dialog
+
+
+    Box (modifier = Modifier.fillMaxSize()) {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -94,7 +107,7 @@ fun NewEvent(navController: NavController) {
                 textDecoration = TextDecoration.None
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Text(
                 text = "Event Name",
@@ -127,7 +140,23 @@ fun NewEvent(navController: NavController) {
                 placeholder = { Text("Tell us everything.", fontSize = 14.sp) },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(bottom = 16.dp)
                     .height(94.dp),
+                maxLines = 1,
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            Text(
+                text = "Location",
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = location,
+                onValueChange = { location = it },
+                label = { Text("Location") },
+                modifier = Modifier.fillMaxWidth(),
                 maxLines = 1,
                 shape = RoundedCornerShape(12.dp)
             )
@@ -187,7 +216,7 @@ fun NewEvent(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "End",
@@ -242,7 +271,7 @@ fun NewEvent(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp)) // Menambah jarak 16dp
+            Spacer(modifier = Modifier.height(8.dp)) // Menambah jarak 16dp
 
             Card(
                 modifier = Modifier
@@ -336,32 +365,173 @@ fun NewEvent(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Box(
+            Card(
                 modifier = Modifier
-                    .fillMaxSize() // Ensures the Box takes the full available size
+                    .fillMaxWidth() // Lebar penuh
+                    .width(327.dp) // Lebar tetap 327dp
+                    .height(72.dp) // Tinggi Card
+                    .clip(RoundedCornerShape(topStart = 16.dp)) // Membuat sudut atas Card melengkung
+                    .alpha(1f) // Mengatur alpha menjadi 1 (sepenuhnya terlihat)
+                    .clickable { /* Action saat Card ditekan */ },
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFF8F9FE) // Warna latar belakang Card
+                )
             ) {
-                Button(
-                    onClick = { navController.navigate("home_screen") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .align(Alignment.BottomCenter), // Use BottomCenter inside Box
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF006FFD),
-                        contentColor = Color.White
-                    )
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start // Menempatkan elemen-elemen di kiri
                 ) {
-                    Text("Save")
+                    // Menampilkan informasi jadwal di kiri
+                    Column(
+                        modifier = Modifier
+                            .weight(1f) // Menggunakan ruang yang tersisa untuk teks
+                            .fillMaxHeight()
+                            .padding(start = 8.dp),
+                        verticalArrangement = Arrangement.Center, // Menyusun elemen secara vertikal di tengah
+                        horizontalAlignment = Alignment.Start // Menyusun teks di kiri
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Menambahkan gambar di kiri
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_repeat), // Ganti dengan id gambar Anda
+                                contentDescription = "Reminder Icon",
+                                modifier = Modifier
+                                    .size(48.dp) // Ukuran gambar
+                                    .padding(end = 8.dp) // Jarak antara gambar dan teks
+                            )
+
+                            // Teks pada bagian kiri
+                            Column {
+                                Text(
+                                    text = "Reminder",
+                                    fontSize = 14.sp,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "None",
+                                    fontSize = 12.sp,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFF71727A)
+                                )
+                            }
+                        }
+                    }
+
+                    // Spacer untuk memberikan jarak di antara elemen kiri dan tombol kanan
+                    Spacer(modifier = Modifier.width(8.dp)) // Menambah jarak 16dp
+
+                    // Tombol Detail di kanan
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .clip(RoundedCornerShape(12.dp)) // Sudut melengkung pada sisi kanan
+                            .border(
+                                2.dp,
+                                Color(0xFF007BFF),
+                                RoundedCornerShape(12.dp)
+                            ) // Menambahkan border dan warna pada border
+                            .width(66.dp)
+                            .height(40.dp)
+                            .clickable { /* Action untuk detail kanan */ }
+                            .padding(4.dp) // Menambahkan padding sekitar tombol detail
+                    ) {
+                        // Menampilkan teks pada Card Detail
+                        Box(
+                            contentAlignment = Alignment.Center, // Memastikan teks berada di tengah
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                text = "Add",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF007BFF),
+                            ) // Teks pada Card Detail
+                        }
+                    }
                 }
             }
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth() // Lebar penuh
+                    .wrapContentHeight() // Tinggi menyesuaikan konten
+                    .clip(RoundedCornerShape(topStart = 16.dp)) // Membuat sudut atas melengkung
+                    .alpha(1f) // Alpha sepenuhnya terlihat
+                    .clickable { /* Action saat Card ditekan */ },
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFF8F9FE) // Warna latar belakang Card
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp) // Padding untuk Card
+                ) {
+                    // Header atau Judul
+                    Text(
+                        text = "Category",
+                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    // Grid dengan elemen di dalamnya
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3), // Grid dengan 2 kolom
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(8.dp), // Padding dalam grid
+                        horizontalArrangement = Arrangement.spacedBy(8.dp), // Jarak horizontal antar item
+                        verticalArrangement = Arrangement.spacedBy(8.dp) // Jarak vertikal antar item
+                    ) {
+                        items(3) { // Mengulang 3 Card
+                            CustomCard() // Memanggil fungsi Card
+                        }
+                    }
+
+                    Button(
+                        onClick = {
+                            showCategoryDialog = true
+                        }, // Menampilkan dialog untuk menambah kategori
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .padding(bottom = 16.dp), // Memberikan jarak antara tombol dan grid
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF006FFD)) // Ganti warna tombol sesuai keinginan
+                    ) {
+                        Text(text = "Add Category", color = Color.White)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+        }
+        Button(
+            onClick = { navController.navigate("home_screen") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp).padding(start = 16.dp, bottom = 16.dp, end = 16.dp)
+                .align(Alignment.BottomCenter), // Use BottomCenter inside Box
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF006FFD),
+                contentColor = Color.White
+            )
+        ) {
+            Text("Save")
         }
         if (selected.value) {
             ScheduleCart(
                 navController = navController,
                 clicked = { selectedDate ->
+
                     if (isStartSelected) {
                         startDate = selectedDate  // Update Start Date
                         isStartSelected = false
