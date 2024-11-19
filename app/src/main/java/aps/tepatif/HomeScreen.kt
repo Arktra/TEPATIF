@@ -20,6 +20,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -87,7 +89,10 @@ fun HomeScreen(navController: NavController) {
 
     val allSchedules = todaySchedules + novemberFirstSchedules
 
-    Box {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -262,7 +267,7 @@ fun HomeScreen(navController: NavController) {
                     .weight(1f)
             ) {
                 items(allSchedules) { schedule ->
-                    ScheduleRow(schedule)
+                    ScheduleRow(schedule, navController)
                     Spacer(
                         modifier = Modifier
                             .height(16.dp)
@@ -377,7 +382,7 @@ fun HomeScreen(navController: NavController) {
 }
 
 @Composable
-fun ScheduleRow(schedule: ScheduleItem) {
+fun ScheduleRow(schedule: ScheduleItem, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth() // Lebar penuh
@@ -435,22 +440,33 @@ fun ScheduleRow(schedule: ScheduleItem) {
                         Color(0xFF007BFF),
                         RoundedCornerShape(12.dp)
                     ) // Menambahkan border dan warna pada border
-                    .width(66.dp)
-                    .height(40.dp)
+                    .width(80.dp) // Lebar tombol Detail
+                    .height(40.dp) // Tinggi tombol Detail
                     .clickable { /* Action untuk detail kanan */ }
-                    .padding(4.dp) // Menambahkan padding sekitar tombol detail
             ) {
                 // Menampilkan teks pada Card Detail
                 Box(
-                    contentAlignment = Alignment.Center, // Memastikan teks berada di tengah
+                    contentAlignment = Alignment.Center, // Memastikan tombol berada di tengah
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    Text(
-                        text = "Detail",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF007BFF),
-                    ) // Teks pada Card Detail
+                    Button(
+                        onClick = { navController.navigate("event_detail_screen") },
+                        modifier = Modifier
+                            .padding(0.dp) // Padding disesuaikan supaya tombol lebih padat
+                            .fillMaxSize() // Memastikan tombol memenuhi ruang
+                            .clip(RoundedCornerShape(12.dp)), // Sudut tombol melengkung
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFB4DBFF), // Warna latar tombol
+                            contentColor = Color(0xFF007BFF) // Warna teks di dalam tombol
+                        )
+                    ) {
+                        Text(
+                            text = "Detail", // Teks yang ada di dalam tombol
+                            fontSize = 12.sp, // Ukuran font yang lebih besar
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center // Memastikan teks berada di tengah tombol
+                        )
+                    }
                 }
             }
         }
