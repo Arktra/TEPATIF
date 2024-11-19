@@ -154,8 +154,8 @@ fun NewEvent(navController: NavController) {
                     },
                     modifier = Modifier
                         .height(34.dp)
-                        .width(123.dp)
-                        .clip(RoundedCornerShape(6.dp)),
+                        .width(123.dp),
+                    shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEEEEEF)),
                     contentPadding = PaddingValues(6.dp)
                 ) {
@@ -173,8 +173,8 @@ fun NewEvent(navController: NavController) {
                     onClick = { /* aksi yang ingin dijalankan saat button ditekan */ },
                     modifier = Modifier
                         .height(34.dp)
-                        .width(86.dp)
-                        .clip(RoundedCornerShape(6.dp)),
+                        .width(86.dp),
+                    shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEEEEEF)),
                     contentPadding = PaddingValues(6.dp)
                 ) {
@@ -209,8 +209,8 @@ fun NewEvent(navController: NavController) {
                     },
                     modifier = Modifier
                         .height(34.dp)
-                        .width(123.dp)
-                        .clip(RoundedCornerShape(6.dp)),
+                        .width(123.dp),
+                    shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEEEEEF)),
                     contentPadding = PaddingValues(6.dp)
                 ) {
@@ -228,8 +228,8 @@ fun NewEvent(navController: NavController) {
                     onClick = { /* aksi yang ingin dijalankan saat button ditekan */ },
                     modifier = Modifier
                         .height(34.dp)
-                        .width(86.dp)
-                        .clip(RoundedCornerShape(6.dp)),
+                        .width(86.dp),
+                    shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEEEEEF)),
                     contentPadding = PaddingValues(6.dp)
                 ) {
