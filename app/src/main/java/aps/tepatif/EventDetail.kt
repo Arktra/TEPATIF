@@ -258,38 +258,6 @@ fun EventDetail(navController: NavController) {
                             }
                         }
                     }
-
-                    // Spacer untuk memberikan jarak di antara elemen kiri dan tombol kanan
-                    Spacer(modifier = Modifier.width(16.dp)) // Menambah jarak 16dp
-
-                    // Tombol Detail di kanan
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 16.dp)
-                            .clip(RoundedCornerShape(12.dp)) // Sudut melengkung pada sisi kanan
-                            .border(
-                                2.dp,
-                                Color(0xFF007BFF),
-                                RoundedCornerShape(12.dp)
-                            ) // Menambahkan border dan warna pada border
-                            .width(66.dp)
-                            .height(40.dp)
-                            .clickable { /* Action untuk detail kanan */ }
-                            .padding(4.dp) // Menambahkan padding sekitar tombol detail
-                    ) {
-                        // Menampilkan teks pada Card Detail
-                        Box(
-                            contentAlignment = Alignment.Center, // Memastikan teks berada di tengah
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Text(
-                                text = "Add",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF007BFF),
-                            ) // Teks pada Card Detail
-                        }
-                    }
                 }
             }
 
