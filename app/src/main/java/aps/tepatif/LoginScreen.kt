@@ -57,12 +57,13 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
             modifier = Modifier
                 .size(width = 300.dp, height = 250.dp) // Ukuran tetap: 360px x 300px
                 .padding(top = 40.dp) // Padding atas 40px
-                .background(Color.LightGray.copy(alpha = 1f)) // Warna LightGray dengan opacity 0 (transparan)
                 .align(Alignment.CenterHorizontally), // Posisikan di tengah secara horizontal
         ) {
-            Text(
-                text = "Logo",
-                modifier = Modifier.align(Alignment.Center),
+            Icon(
+                modifier = Modifier.fillMaxSize(),
+                painter = painterResource(id = R.drawable.ic_logo),
+                contentDescription = "Facebook",
+                tint = Color.Unspecified
             )
         }
 
