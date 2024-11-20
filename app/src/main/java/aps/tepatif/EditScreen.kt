@@ -63,6 +63,7 @@ fun EditScreen(navController: NavController) {
     var selected = remember { mutableStateOf(false) }
     var eventName by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf("") }
 
     var startDate by remember { mutableStateOf("") }  // Track start date
     var endDate by remember { mutableStateOf("") }    // Track end date
@@ -95,7 +96,8 @@ fun EditScreen(navController: NavController) {
     val showOptions = remember { mutableStateOf(false) }
     val selectedReminder = remember { mutableStateOf("None") } // Default reminder is "None"
 
-    Box {
+    Box (modifier = Modifier.fillMaxSize()) {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -114,7 +116,7 @@ fun EditScreen(navController: NavController) {
                 textDecoration = TextDecoration.None
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Text(
                 text = "Event Name",
@@ -147,7 +149,23 @@ fun EditScreen(navController: NavController) {
                 placeholder = { Text("Tell us everything.", fontSize = 14.sp) },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(bottom = 16.dp)
                     .height(94.dp),
+                maxLines = 1,
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            Text(
+                text = "Location",
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = location,
+                onValueChange = { location = it },
+                label = { Text("Location") },
+                modifier = Modifier.fillMaxWidth(),
                 maxLines = 1,
                 shape = RoundedCornerShape(12.dp)
             )
@@ -207,7 +225,7 @@ fun EditScreen(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "End",
@@ -262,8 +280,191 @@ fun EditScreen(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp)) // Menambah jarak 16dp
+            Spacer(modifier = Modifier.height(8.dp)) // Menambah jarak 16dp
 
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth() // Lebar penuh
+                    .width(327.dp) // Lebar tetap 327dp
+                    .height(72.dp) // Tinggi Card
+                    .clip(RoundedCornerShape(topStart = 16.dp)) // Membuat sudut atas Card melengkung
+                    .alpha(1f) // Mengatur alpha menjadi 1 (sepenuhnya terlihat)
+                    .clickable { /* Action saat Card ditekan */ },
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFF8F9FE) // Warna latar belakang Card
+                )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start // Menempatkan elemen-elemen di kiri
+                ) {
+                    // Menampilkan informasi jadwal di kiri
+                    Column(
+                        modifier = Modifier
+                            .weight(1f) // Menggunakan ruang yang tersisa untuk teks
+                            .fillMaxHeight()
+                            .padding(start = 8.dp),
+                        verticalArrangement = Arrangement.Center, // Menyusun elemen secara vertikal di tengah
+                        horizontalAlignment = Alignment.Start // Menyusun teks di kiri
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Menambahkan gambar di kiri
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_reminder), // Ganti dengan id gambar Anda
+                                contentDescription = "Reminder Icon",
+                                modifier = Modifier
+                                    .size(48.dp) // Ukuran gambar
+                                    .padding(end = 8.dp) // Jarak antara gambar dan teks
+                            )
+
+                            // Teks pada bagian kiri
+                            Column {
+                                Text(
+                                    text = "Reminder",
+                                    fontSize = 14.sp,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "None",
+                                    fontSize = 12.sp,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFF71727A)
+                                )
+                            }
+                        }
+                    }
+
+                    // Spacer untuk memberikan jarak di antara elemen kiri dan tombol kanan
+                    Spacer(modifier = Modifier.width(16.dp)) // Menambah jarak 16dp
+
+                    // Tombol Detail di kanan
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .clip(RoundedCornerShape(12.dp)) // Sudut melengkung pada sisi kanan
+                            .border(
+                                2.dp,
+                                Color(0xFF007BFF),
+                                RoundedCornerShape(12.dp)
+                            ) // Menambahkan border dan warna pada border
+                            .width(66.dp)
+                            .height(40.dp)
+                            .clickable { /* Action untuk detail kanan */ }
+                            .padding(4.dp) // Menambahkan padding sekitar tombol detail
+                    ) {
+                        // Menampilkan teks pada Card Detail
+                        Box(
+                            contentAlignment = Alignment.Center, // Memastikan teks berada di tengah
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                text = "Add",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF007BFF),
+                            ) // Teks pada Card Detail
+                        }
+                    }
+                }
+            }
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth() // Lebar penuh
+                    .width(327.dp) // Lebar tetap 327dp
+                    .height(72.dp) // Tinggi Card
+                    .clip(RoundedCornerShape(topStart = 16.dp)) // Membuat sudut atas Card melengkung
+                    .alpha(1f) // Mengatur alpha menjadi 1 (sepenuhnya terlihat)
+                    .clickable { /* Action saat Card ditekan */ },
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFF8F9FE) // Warna latar belakang Card
+                )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start // Menempatkan elemen-elemen di kiri
+                ) {
+                    // Menampilkan informasi jadwal di kiri
+                    Column(
+                        modifier = Modifier
+                            .weight(1f) // Menggunakan ruang yang tersisa untuk teks
+                            .fillMaxHeight()
+                            .padding(start = 8.dp),
+                        verticalArrangement = Arrangement.Center, // Menyusun elemen secara vertikal di tengah
+                        horizontalAlignment = Alignment.Start // Menyusun teks di kiri
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Menambahkan gambar di kiri
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_repeat), // Ganti dengan id gambar Anda
+                                contentDescription = "Reminder Icon",
+                                modifier = Modifier
+                                    .size(48.dp) // Ukuran gambar
+                                    .padding(end = 8.dp) // Jarak antara gambar dan teks
+                            )
+
+                            // Teks pada bagian kiri
+                            Column {
+                                Text(
+                                    text = "Reminder",
+                                    fontSize = 14.sp,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "None",
+                                    fontSize = 12.sp,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFF71727A)
+                                )
+                            }
+                        }
+                    }
+
+                    // Spacer untuk memberikan jarak di antara elemen kiri dan tombol kanan
+                    Spacer(modifier = Modifier.width(8.dp)) // Menambah jarak 16dp
+
+                    // Tombol Detail di kanan
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .clip(RoundedCornerShape(12.dp)) // Sudut melengkung pada sisi kanan
+                            .border(
+                                2.dp,
+                                Color(0xFF007BFF),
+                                RoundedCornerShape(12.dp)
+                            ) // Menambahkan border dan warna pada border
+                            .width(66.dp)
+                            .height(40.dp)
+                            .clickable { /* Action untuk detail kanan */ }
+                            .padding(4.dp) // Menambahkan padding sekitar tombol detail
+                    ) {
+                        // Menampilkan teks pada Card Detail
+                        Box(
+                            contentAlignment = Alignment.Center, // Memastikan teks berada di tengah
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                text = "Add",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF007BFF),
+                            ) // Teks pada Card Detail
+                        }
+                    }
+                }
+            }
             Card(
                 modifier = Modifier
                     .fillMaxWidth() // Lebar penuh
@@ -318,119 +519,28 @@ fun EditScreen(navController: NavController) {
                 }
             }
 
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth() // Full width
-                    .height(72.dp) // Card height
-                    .clip(RoundedCornerShape(topStart = 16.dp))
-                    .alpha(1f)
-                    .clickable { showOptions.value = true }, // Show options when clicked
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFF8F9FE)
-                )
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    // Left content with reminder label and value
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .padding(start = 8.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.Start
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_reminder), // Reminder Icon
-                                contentDescription = "Reminder Icon",
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .padding(end = 8.dp)
-                            )
+            Spacer(modifier = Modifier.height(8.dp))
 
-                            Column {
-                                Text(
-                                    text = "Reminder",
-                                    fontSize = 14.sp,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.Black
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = selectedReminder.value, // Display the selected reminder
-                                    fontSize = 12.sp,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF71727A)
-                                )
-                            }
-                        }
-                    }
-
-                    // Spacer untuk memberikan jarak di antara elemen kiri dan tombol kanan
-                    Spacer(modifier = Modifier.width(16.dp)) // Menambah jarak 16dp
-
-                    // Tombol Add di kanan
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 16.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .border(2.dp, Color(0xFF007BFF), RoundedCornerShape(12.dp))
-                            .width(66.dp)
-                            .height(40.dp)
-                            .clickable { showOptions.value = true } // Show dialog on click
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Text(
-                                text = "Add",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF006FFD)
-                            )
-                        }
-                    }
-
-
-                }
-
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize() // Ensures the Box takes the full available size
-            ) {
-
-                Button(
-                    onClick = { navController.navigate("home_screen") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .align(Alignment.BottomCenter), // Use BottomCenter inside Box
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF006FFD),
-                        contentColor = Color.White
-                    )
-                ) {
-                    Text("Save")
-                }
-            }
+        }
+        Button(
+            onClick = { navController.navigate("home_screen") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp).padding(start = 16.dp, bottom = 16.dp, end = 16.dp)
+                .align(Alignment.BottomCenter), // Use BottomCenter inside Box
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF006FFD),
+                contentColor = Color.White
+            )
+        ) {
+            Text("Save")
         }
         if (selected.value) {
             ScheduleCart(
                 navController = navController,
                 clicked = { selectedDate ->
+
                     if (isStartSelected) {
                         startDate = selectedDate  // Update Start Date
                         isStartSelected = false
@@ -441,30 +551,6 @@ fun EditScreen(navController: NavController) {
                 }
             )
 
-        }
-
-        if (showCategoryDialog) {
-            AddCategoryDialog(
-                newCategoryName = newCategoryName,
-                onNewCategoryChange = { newCategoryName = it },
-                onSave = {
-                    if (newCategoryName.isNotBlank()) {
-                        categories.add(newCategoryName)
-                        newCategoryName = ""
-                        showCategoryDialog = false
-                    }
-                },
-                onCancel = { showCategoryDialog = false }
-            )
-        }
-        if (showOptions.value) {
-            ReminderOptions(
-                navController = navController,
-                onDismiss = { showOptions.value = false }, // Dismiss the dialog
-                onConfirm = {
-                    selectedReminder.value = it
-                } // Update selected reminder on confirm
-            )
         }
     }
 }
