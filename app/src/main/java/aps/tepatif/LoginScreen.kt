@@ -1,44 +1,45 @@
-import aps.tepatif.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
 import androidx.navigation.NavController
-
 import androidx.navigation.compose.rememberNavController
+import aps.tepatif.R
 import aps.tepatif.backend.BackEndAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
     var email by remember { mutableStateOf("") }
@@ -46,52 +47,123 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
     var passwordVisible by remember { mutableStateOf(false) }
     var loginError by remember { mutableStateOf<String?>(null) }
 
+    val constraints = ConstraintSet {
+        val logo = createRefFor("logo")
+        val welcomeText = createRefFor("welcomeText")
+        val emailField = createRefFor("emailField")
+        val passwordField = createRefFor("passwordField")
+        val forgotPassword = createRefFor("forgotPassword")
+        val loginButton = createRefFor("loginButton")
+        val errorText = createRefFor("errorText")
+        val registerRow = createRefFor("registerRow")
+        val divider = createRefFor("divider")
+        val socialLoginText = createRefFor("socialLoginText")
+        val socialLoginIcons = createRefFor("socialLoginIcons")
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Placeholder for image
-        Box(
-            modifier = Modifier
-                .size(width = 300.dp, height = 250.dp) // Ukuran tetap: 360px x 300px
-                .padding(top = 40.dp) // Padding atas 40px
-                .align(Alignment.CenterHorizontally), // Posisikan di tengah secara horizontal
-        ) {
-            Icon(
-                modifier = Modifier.fillMaxSize(),
-                painter = painterResource(id = R.drawable.ic_logo),
-                contentDescription = "Facebook",
-                tint = Color.Unspecified
-            )
+        constrain(logo) {
+            top.linkTo(parent.top)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
         }
 
+        constrain(welcomeText) {
+            top.linkTo(logo.bottom, margin = 40.dp)
+            start.linkTo(parent.start)
+        }
 
-        Spacer(modifier = Modifier.height(40.dp))
+        constrain(emailField) {
+            top.linkTo(welcomeText.bottom, margin = 16.dp)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(passwordField) {
+            top.linkTo(emailField.bottom, margin = 16.dp)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(forgotPassword) {
+            top.linkTo(passwordField.bottom, margin = 16.dp)
+            start.linkTo(parent.start)
+        }
+
+        constrain(loginButton) {
+            top.linkTo(forgotPassword.bottom, margin = 16.dp)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(errorText) {
+            top.linkTo(loginButton.bottom, margin = 8.dp)
+            start.linkTo(parent.start)
+        }
+
+        constrain(registerRow) {
+            top.linkTo(errorText.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(divider) {
+            top.linkTo(registerRow.bottom, margin = 16.dp)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(socialLoginText) {
+            top.linkTo(divider.bottom, margin = 16.dp)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(socialLoginIcons) {
+            top.linkTo(socialLoginText.bottom, margin = 16.dp)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+    }
+
+    ConstraintLayout(constraintSet = constraints, modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth() // Menyebar penuh dari kiri ke kanan
+                .height(256.dp) // Menentukan tinggi background sesuai ukuran logo
+                .layoutId("logo")
+                .background(Color(0xFFEAF2FF), shape = RoundedCornerShape(12.dp)) // Background untuk logo
+                .padding(bottom = 16.dp) // Menambahkan padding di bawah background
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_logo),
+                contentDescription = "Logo",
+                tint = Color.Unspecified,
+                modifier = Modifier
+                    .align(Alignment.Center).size(212.dp) // Memposisikan logo di tengah Box
+            )
+        }
 
         Text(
             text = "Welcome!",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            lineHeight = 29.05.sp,
-            letterSpacing = 0.01.em,
-            textAlign = TextAlign.Start,
-            textDecoration = TextDecoration.None
+            modifier = Modifier.layoutId("welcomeText").padding(start = 16.dp, end = 16.dp),
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
             label = { Text("Email Address") },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.layoutId("emailField").fillMaxWidth().padding(start = 16.dp, end = 16.dp),
             maxLines = 1,
-            shape = RoundedCornerShape(12.dp)
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done // Menonaktifkan pindah baris dengan tombol enter
+            ),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                unfocusedBorderColor = Color.Gray, // Warna border saat tidak fokus
+                unfocusedLabelColor = Color.Gray // Warna label saat tidak fokus
+            ),
+            shape = RoundedCornerShape(12.dp),
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = password,
@@ -106,55 +178,49 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
                     )
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.layoutId("passwordField").fillMaxWidth().padding(start = 16.dp, end = 16.dp),
             maxLines = 1,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done // Menonaktifkan pindah baris dengan tombol enter
+            ),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                unfocusedBorderColor = Color.Gray, // Warna border saat tidak fokus
+                unfocusedLabelColor = Color.Gray // Warna label saat tidak fokus
+            ),
             shape = RoundedCornerShape(12.dp)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Forgot password?",
+            style = typography.bodyMedium.copy(
+                color = Color(0xFF006FFD),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.W600,
+            ),
+            modifier = Modifier.layoutId("forgotPassword").padding(start = 16.dp, end = 16.dp)
+        )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Text(
-                text = "Forgot password?",
-                style = typography.bodyMedium.copy(
-                    fontFamily = FontFamily.Default, // Replace with your Inter font family
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.W600,
-                    lineHeight = 14.52.sp,
-                    textAlign = TextAlign.Left,
-                    color = Color(0xFF006FFD) // Set text color to #006FFD
-                )
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextButton (
-            onClick = { CoroutineScope(Dispatchers.IO).launch {
-                val user = backEndAuth.login(email, password)
-                if (user != null) {
-                    withContext(Dispatchers.Main) {
-                        navController.navigate("home_screen")
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        loginError = "Login failed. Please check your credentials."
+        Button(
+            onClick = {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val user = backEndAuth.login(email, password)
+                    if (user != null) {
+                        withContext(Dispatchers.Main) {
+                            navController.navigate("home_screen")
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            loginError = "Login failed. Please check your credentials."
+                        }
                     }
                 }
-            } },
-            modifier = Modifier
-                .fillMaxWidth()
-                .width(327.dp)
-                .height(48.dp)
-                .clip(RoundedCornerShape(topStart = 12.dp))
-                .alpha(1f), // Set alpha to 1f (fully visible)
+            },
+            modifier = Modifier.layoutId("loginButton").fillMaxWidth().height(48.dp).padding(start = 16.dp, end = 16.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF006FFD), // Set background color to #006FFD
-                contentColor = Color.White // Keep content color as white
-            )
+                containerColor = Color(0xFF006FFD),
+                contentColor = Color.White
+            ),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Text("Login")
         }
@@ -163,69 +229,64 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
             Text(
                 text = it,
                 color = Color.Red,
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.layoutId("errorText").padding(start = 16.dp, end = 16.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
         Row(
-            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically // Align items vertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.layoutId("registerRow").fillMaxWidth().padding(start = 16.dp, end = 16.dp)
         ) {
             Text(
                 "Not a member?",
                 color = Color(0xFF71727A),
-                modifier = Modifier.alignByBaseline() // Align by baseline
+                lineHeight = 16.sp,
+                fontWeight = FontWeight.W400
             )
-            TextButton(
-                onClick = { navController.navigate("sign_up_screen") },
-                modifier = Modifier.alignByBaseline() // Align by baseline
-            ) {
-                Text("Register now")
+            TextButton(onClick = { navController.navigate("sign_up_screen") }) {
+                Text(
+                    "Register now",
+                    color = Color(0xFF006FFD),
+                    lineHeight = 16.sp,
+                    fontWeight = FontWeight.W600
+                )
             }
         }
 
         Divider(
-            color = Color.LightGray, // Set the color of the divider
-            thickness = 1.dp, // Set the thickness of the divider
-            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp) // Add padding if needed
+            color = Color.LightGray,
+            thickness = 1.dp,
+            modifier = Modifier.layoutId("divider").padding(start = 16.dp, end = 16.dp)
         )
 
         Text(
             text = "Or continue with",
-            textAlign = TextAlign.Center, // Mengatur teks agar rata tengah
             color = Color(0xFF71727A),
-            modifier = Modifier
-                .fillMaxWidth() // Memastikan teks mengambil seluruh lebar layar
-                .padding(top = 16.dp, bottom = 8.dp) // Memberikan jarak vertikal untuk estetika
+            modifier = Modifier.layoutId("socialLoginText").padding(start = 16.dp, end = 16.dp)
         )
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.layoutId("socialLoginIcons").padding(start = 16.dp, end = 16.dp)
         ) {
-            // Using Icons.Filled for social media login buttons
-            IconButton(onClick = { /* Google login */ }) {
+            IconButton(onClick = { /* Google login */ }, modifier = Modifier.size(40.dp)) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_google),
-                    contentDescription = "Email Icon",
+                    contentDescription = "Google",
                     tint = Color.Unspecified
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
-
-            IconButton(onClick = { /* Apple login */ }) {
+            IconButton(onClick = { /* Apple login */ }, modifier = Modifier.size(40.dp),) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_apple),
-                    contentDescription = "Email Icon",
+                    contentDescription = "Apple",
                     tint = Color.Unspecified
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
-
-            IconButton(onClick = { /* Apple login */ }) {
+            IconButton(onClick = { /* Facebook login */ }, modifier = Modifier.size(40.dp),) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_facebook),
                     contentDescription = "Facebook",
