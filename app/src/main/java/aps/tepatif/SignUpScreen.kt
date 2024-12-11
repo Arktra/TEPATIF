@@ -1,29 +1,29 @@
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,28 +32,32 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import aps.tepatif.backend.BackEndAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
     var name by remember { mutableStateOf("") }
@@ -63,17 +67,87 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
     var passwordVisible by remember { mutableStateOf(false) }
     var isChecked by remember { mutableStateOf(false) }
     var registerError by remember { mutableStateOf<String?>(null) }
-    val backEndAuth = BackEndAuth()
+    val focusManager = LocalFocusManager.current
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
+    val constraints = ConstraintSet {
+        val signUpText = createRefFor("signUpText")
+        val createText = createRefFor("createText")
+        val nameText = createRefFor("nameText")
+        val nameField = createRefFor("nameField")
+        val emailText = createRefFor("emailText")
+        val emailField = createRefFor("emailField")
+        val passwordText = createRefFor("passwordText")
+        val passwordField = createRefFor("passwordField")
+        val confirmPasswordField = createRefFor("confirmPasswordField")
+        val checkedRow = createRefFor("checkedRow")
+        val signUpButton = createRefFor("signUpButton")
 
+        constrain(signUpText) {
+            top.linkTo(parent.top, margin = 30.dp)
+            start.linkTo(parent.start)
+        }
+
+        constrain(createText) {
+            top.linkTo(signUpText.bottom)
+            start.linkTo(parent.start)
+        }
+
+        constrain(nameText) {
+            top.linkTo(createText.bottom, margin = 16.dp)
+            start.linkTo(parent.start)
+        }
+
+        constrain(nameField) {
+            top.linkTo(nameText.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(emailText) {
+            top.linkTo(nameField.bottom, margin = 16.dp)
+            start.linkTo(parent.start)
+        }
+
+        constrain(emailField) {
+            top.linkTo(emailText.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(passwordText) {
+            top.linkTo(emailField.bottom, margin = 16.dp)
+            start.linkTo(parent.start)
+        }
+
+        constrain(passwordField) {
+            top.linkTo(passwordText.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(confirmPasswordField) {
+            top.linkTo(passwordField.bottom, margin = 8.dp)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(checkedRow) {
+            top.linkTo(confirmPasswordField.bottom, margin = 16.dp)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(signUpButton) {
+            bottom.linkTo(parent.bottom, margin = 16.dp)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+    }
+
+    ConstraintLayout(constraintSet = constraints, modifier = Modifier.fillMaxSize()) {
         Text(
             text = "Sign Up",
+            modifier = Modifier.layoutId("signUpText").padding(start = 16.dp, end = 16.dp),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             lineHeight = 29.05.sp,
@@ -85,51 +159,70 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
         Text(
             text = "Create an account to get started",
             color = Color(0xFF71727A),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
+            modifier = Modifier.layoutId("createText").padding(start = 16.dp, end = 16.dp)
         )
 
         Text(
             text = "Name",
             fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp)
+            modifier = Modifier.layoutId("nameText").padding(start = 16.dp, end = 16.dp)
         )
 
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("your_name") },
-            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Name") },
+            modifier = Modifier.fillMaxWidth().layoutId("nameField").padding(start = 16.dp, end = 16.dp),
             maxLines = 1,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next // Menonaktifkan pindah baris dengan tombol enter
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.moveFocus(FocusDirection.Down) // Menghapus fokus saat tombol ceklis ditekan
+                }
+            ),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                unfocusedBorderColor = Color.Gray, // Warna border saat tidak fokus
+                unfocusedLabelColor = Color.Gray // Warna label saat tidak fokus
+            ),
             shape = RoundedCornerShape(12.dp)
         )
 
         Text(
             text = "Email Address",
             fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
+            modifier = Modifier.fillMaxWidth().layoutId("emailText").padding(start = 16.dp, end = 16.dp)
         )
 
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("name@email.com") },
-            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Email Address") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .layoutId("emailField")
+                .padding(start = 16.dp, end = 16.dp),
             maxLines = 1,
-            shape = RoundedCornerShape(12.dp)
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next // Menonaktifkan pindah baris dengan tombol enter
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.moveFocus(FocusDirection.Down) // Menghapus fokus saat tombol ceklis ditekan
+                }
+            ),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                unfocusedBorderColor = Color.Gray, // Warna border saat tidak fokus
+                unfocusedLabelColor = Color.Gray // Warna label saat tidak fokus
+            ),
+            shape = RoundedCornerShape(12.dp),
         )
 
         Text(
             text = "Password",
             fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
+            modifier = Modifier.layoutId("passwordText").padding(start = 16.dp, end = 16.dp)
         )
 
         OutlinedTextField(
@@ -145,17 +238,27 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
                     )
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().layoutId("passwordField").padding(start = 16.dp, end = 16.dp),
             maxLines = 1,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next // Menonaktifkan pindah baris dengan tombol enter
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.moveFocus(FocusDirection.Down) // Menghapus fokus saat tombol ceklis ditekan
+                }
+            ),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                unfocusedBorderColor = Color.Gray, // Warna border saat tidak fokus
+                unfocusedLabelColor = Color.Gray // Warna label saat tidak fokus
+            ),
             shape = RoundedCornerShape(12.dp)
         )
-
-        Spacer(modifier = Modifier.height(10.dp))
 
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = { Text("Confirm Password") },
+            label = { Text("Confirm password") },
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
@@ -165,15 +268,26 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
                     )
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().layoutId("confirmPasswordField").padding(start = 16.dp, end = 16.dp),
             maxLines = 1,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done // Menonaktifkan pindah baris dengan tombol enter
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus() // Menghapus fokus saat tombol ceklis ditekan
+                }
+            ),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                unfocusedBorderColor = Color.Gray, // Warna border saat tidak fokus
+                unfocusedLabelColor = Color.Gray // Warna label saat tidak fokus
+            ),
             shape = RoundedCornerShape(12.dp)
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
-
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.layoutId("checkedRow").padding(start = 16.dp, end = 16.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -184,7 +298,6 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
                         shape = RoundedCornerShape(6.dp)
                     )
                     .clickable { isChecked = !isChecked }
-                    .padding(2.dp)
             ) {
                 if (isChecked) {
                     Icon(
@@ -198,28 +311,20 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
 
             val annotatedString = buildAnnotatedString {
                 append("I've read and agree with the ")
-                pushStringAnnotation(tag = "terms", annotation = "https://example.com/terms")
                 withStyle(style = SpanStyle(color = Color.Blue)) {
                     append("terms and conditions")
                 }
-                pop()
                 append(" and the ")
-                pushStringAnnotation(
-                    tag = "privacy",
-                    annotation = "https://example.com/privacy"
-                )
                 withStyle(style = SpanStyle(color = Color.Blue)) {
                     append("privacy policy")
                 }
-                pop()
             }
 
             ClickableText(
                 text = annotatedString,
                 onClick = { offset ->
                     annotatedString.getStringAnnotations(offset, offset).firstOrNull()?.let {
-                        val url = it.item
-                        println("Open URL: $url")
+                        /* URL */
                     }
                 },
                 modifier = Modifier.padding(start = 8.dp)
@@ -227,9 +332,7 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
         }
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier = Modifier.layoutId("signUpButton").padding(start = 16.dp, end = 16.dp),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -254,16 +357,14 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .width(327.dp)
-                    .height(48.dp)
-                    .clip(RoundedCornerShape(topStart = 12.dp))
                     .alpha(1f),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF006FFD),
                     contentColor = Color.White
-                )
+                ),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Sign Up")
+                Text("Sign Up", modifier = Modifier.padding(8.dp))
             }
 
             registerError?.let {
@@ -275,11 +376,4 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SignUpScreenPreview() {
-    val navController = rememberNavController()
-    SignUpScreen(navController = navController, backEndAuth = BackEndAuth())
 }
