@@ -1,6 +1,7 @@
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -18,20 +19,20 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import aps.tepatif.R
 import aps.tepatif.backend.BackEndAuth
 import kotlinx.coroutines.CoroutineScope
@@ -46,6 +47,7 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var loginError by remember { mutableStateOf<String?>(null) }
+    val focusManager = LocalFocusManager.current
 
     val constraints = ConstraintSet {
         val logo = createRefFor("logo")
@@ -156,7 +158,12 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
             modifier = Modifier.layoutId("emailField").fillMaxWidth().padding(start = 16.dp, end = 16.dp),
             maxLines = 1,
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done // Menonaktifkan pindah baris dengan tombol enter
+                imeAction = ImeAction.Next // Menonaktifkan pindah baris dengan tombol enter
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.moveFocus(FocusDirection.Down) // Menghapus fokus saat tombol ceklis ditekan
+                }
             ),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = Color.Gray, // Warna border saat tidak fokus
@@ -182,6 +189,11 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
             maxLines = 1,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done // Menonaktifkan pindah baris dengan tombol enter
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus() // Menghapus fokus saat tombol ceklis ditekan
+                }
             ),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = Color.Gray, // Warna border saat tidak fokus
@@ -295,11 +307,4 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    val navController = rememberNavController()
-    LoginScreen(navController = navController, backEndAuth = BackEndAuth())
 }
