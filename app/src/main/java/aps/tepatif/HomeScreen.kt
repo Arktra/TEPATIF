@@ -1,7 +1,11 @@
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +24,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -38,6 +43,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -45,20 +53,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import aps.tepatif.AlertCategoryWindow
 import aps.tepatif.ConfirmWindow
 import aps.tepatif.R
+import aps.tepatif.ScheduleCart
 import java.util.Calendar
 
 @Composable
 fun HomeScreen(navController: NavController) {
-    var showConfirm = remember { mutableStateOf(false) }
     val calendar = Calendar.getInstance()
-
+    var showSeachCategory = remember { mutableStateOf(false) }
     val selectedDay = remember { mutableStateOf<Int?>(calendar.get(Calendar.DAY_OF_MONTH)) }
-    // Gunakan state untuk menyimpan satu tanggal yang dipilih
-
     val currentMonth = remember { mutableStateOf(calendar.get(Calendar.MONTH) + 1) }
     val currentYear = remember { mutableStateOf(calendar.get(Calendar.YEAR)) }
 
@@ -68,6 +78,7 @@ fun HomeScreen(navController: NavController) {
 
     val schedules = listOf(
         ScheduleItem("APS", "08:40 - 10:20"),
+        ScheduleItem("RPL", "10:20 - 12:00"),
         ScheduleItem("Praktikum APS", "09:50 - 10:20"),
         ScheduleItem("Praktikum Jarkom", "10:20 - 11:50"),
         ScheduleItem("Praktikum Basis Data", "13:50 - 14:20"),
@@ -89,20 +100,78 @@ fun HomeScreen(navController: NavController) {
 
     val allSchedules = todaySchedules + novemberFirstSchedules
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+    val focusManager = LocalFocusManager.current
+
+    val constraints = ConstraintSet {
+        val timeSpan = createRefFor("timeSpan")
+        val days = createRefFor("days")
+        val dates = createRefFor("dates")
+        val filterButton = createRefFor("filterButton")
+        val lazyColumn = createRefFor("lazyColumn")
+        val card = createRefFor("card")
+        val addEventButton = createRefFor("addEventButton")
+        val navBar = createRefFor("navBar")
+
+        constrain(timeSpan) {
+            top.linkTo(parent.top)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+            width = Dimension.percent(0.7f)
+            height = Dimension.percent(0.02f)
+        }
+
+        constrain(days) {
+            top.linkTo(timeSpan.bottom)
+            start.linkTo(parent.start)
+            width = Dimension.percent(0.35f)
+            height = Dimension.percent(0.03f)
+        }
+
+        constrain(dates) {
+            top.linkTo(days.bottom)
+            start.linkTo(parent.start)
+            width = Dimension.percent(0.35f)
+            height = Dimension.percent(0.19f)
+        }
+
+        constrain(filterButton) {
+            top.linkTo(dates.bottom)
+            start.linkTo(parent.start)
+        }
+
+        constrain(lazyColumn) {
+            top.linkTo(filterButton.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(card) {
+            top.linkTo(lazyColumn.bottom)
+            start.linkTo(parent.start)
+        }
+
+        constrain(addEventButton) {
+            top.linkTo(card.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(navBar) {
+            top.linkTo(addEventButton.bottom)
+            start.linkTo(parent.start)
+        }
+    }
+
+    ConstraintLayout(constraintSet = constraints, modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Header dengan tombol navigasi bulan
-            Spacer(modifier = Modifier.height(30.dp))
+
             Row(
-                modifier = Modifier.size(303.dp, 24.dp),
+                modifier = Modifier.layoutId("timeSpan"),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -148,18 +217,14 @@ fun HomeScreen(navController: NavController) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_right_arrow),
                         contentDescription = "Next Month",
-                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Menampilkan nama hari dalam seminggu
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
-                    .size(303.dp, 28.dp) // Ukuran tetap
+                    .layoutId("days")
             ) {
                 listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT").forEach { day ->
                     Text(
@@ -175,12 +240,9 @@ fun HomeScreen(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Menampilkan kalender berdasarkan bulan dan tahun
             LazyVerticalGrid(
                 columns = GridCells.Fixed(7),
-                modifier = Modifier.size(303.dp, 163.dp)
+                modifier = Modifier.layoutId("dates")
             ) {
                 val days = generateDaysInMonth(currentMonth.value, currentYear.value)
 
@@ -258,20 +320,42 @@ fun HomeScreen(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(49.dp))
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_filter), // Ganti dengan nama file SVG Anda
+                    contentDescription = "Profile",
+                    tint = Color(0xFFC5C6CC),
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null, // Menghilangkan animasi warna abu-abu
+                            onClick = {
+                                showSeachCategory.value = true
+                                focusManager.clearFocus() // Menghapus fokus saat tombol ditekan
+                            }
+                        )
+                )
+            }
 
-            // Daftar jadwal
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
+                    .layoutId("lazyColumn")
+                    .padding(top = 16.dp, bottom = 16.dp)
             ) {
                 items(allSchedules) { schedule ->
                     ScheduleRow(schedule, navController)
                     Spacer(
                         modifier = Modifier
                             .height(16.dp)
-                            .padding(start = 12.dp)
+                            .padding(bottom = 12.dp)
                     )
                 }
             }
@@ -281,7 +365,8 @@ fun HomeScreen(navController: NavController) {
                     .fillMaxWidth() // Lebar penuh
                     .width(327.dp) // Lebar tetap 327dp
                     .height(48.dp) // Tinggi Card
-                    .clip(RoundedCornerShape(12.dp)) // Membuat sudut atas Card melengkung
+                    .clip(RoundedCornerShape(12.dp))
+                    .layoutId("card") // Membuat sudut atas Card melengkung
                     .alpha(1f) // Mengatur alpha menjadi 1 (sepenuhnya terlihat)
                     .clickable { navController.navigate("new_event_screen") },
                 colors = CardDefaults.cardColors(
@@ -312,70 +397,70 @@ fun HomeScreen(navController: NavController) {
                 }
             }
 
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth() // Lebar penuh
                     .height(88.dp)
-                    .padding(16.dp), // Memberikan padding pada navbar
+                    .layoutId("navBar"),
                 horizontalArrangement = Arrangement.SpaceBetween, // Jarak antar tombol navbar yang sama
                 verticalAlignment = Alignment.CenterVertically // Menjaga tombol tetap sejajar vertikal
             ) {
-                // Tombol Home
-                IconButton(
-                    onClick = { /* Action Profile */ },
-                    modifier = Modifier.size(96.dp) // Meningkatkan ukuran tombol secara keseluruhan
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_event), // Ganti dengan nama file SVG Anda
-                        contentDescription = "Profile",
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_event), // Ganti dengan nama file SVG Anda
+                    contentDescription = "Profile",
+                    modifier = Modifier
+                        .size(96.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null, // Menghilangkan animasi warna abu-abu
+                            onClick = {
+                                navController.navigate("new_event_screen")
+                                focusManager.clearFocus() // Menghapus fokus saat tombol ditekan
+                            }
+                        )
+                )
 
-                // Tombol Search
-                IconButton(
-                    onClick = { /* Empty */ },
-                    modifier = Modifier.size(96.dp) // Meningkatkan ukuran tombol secara keseluruhan
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_schedule), // Ganti dengan nama file SVG Anda
-                        contentDescription = "Profile",
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_schedule), // Ganti dengan nama file SVG Anda
+                    contentDescription = "Profile",
+                    modifier = Modifier
+                        .size(96.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null, // Menghilangkan animasi warna abu-abu
+                            onClick = {
+                                navController.navigate("home_screen")
+                                focusManager.clearFocus() // Menghapus fokus saat tombol ditekan
+                            }
+                        )
+                )
 
-                // Tombol Profile
-                IconButton(
-                    onClick = {
-                        showConfirm.value = true
-                    },
-                    modifier = Modifier.size(96.dp) // Meningkatkan ukuran tombol secara keseluruhan
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_settings), // Ganti dengan nama file SVG Anda
-                        contentDescription = "Profile",
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_settings), // Ganti dengan nama file SVG Anda
+                    contentDescription = "Profile",
+                    modifier = Modifier
+                        .size(96.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null, // Menghilangkan animasi warna abu-abu
+                            onClick = {
+                                navController.navigate("settings_screen")
+                                focusManager.clearFocus()
+                            }
+                        )
+                )
             }
-
         }
-        if (showConfirm.value) {
-            ConfirmWindow(
-                navController = navController,
-                message = "Are you sure you want to proceed?",
-                onConfirm = {
-                    // Action on confirmation
-                    showConfirm.value = false // Hide the dialog after confirmation
-                },
-                onCancel = {
-                    // Action on cancellation
-                    showConfirm.value = false // Hide the dialog after cancellation
-                }
-            )
 
+        if (showSeachCategory.value) {
+            AlertCategoryWindow(
+                navController = navController,
+                showDialog = showSeachCategory.value,
+                title = "Search Category",
+                onDismiss = { showSeachCategory.value = false },
+                onConfirm = { showSeachCategory.value = false },
+                onCancel = { showSeachCategory.value = false }
+            )
         }
 
     }
@@ -388,7 +473,7 @@ fun ScheduleRow(schedule: ScheduleItem, navController: NavController) {
             .fillMaxWidth() // Lebar penuh
             .width(327.dp) // Lebar tetap 327dp
             .height(72.dp) // Tinggi Card
-            .clip(RoundedCornerShape(topStart = 16.dp)) // Membuat sudut atas Card melengkung
+            .clip(RoundedCornerShape(16.dp)) // Membuat sudut atas Card melengkung
             .alpha(1f) // Mengatur alpha menjadi 1 (sepenuhnya terlihat)
             .clickable { /* Action saat Card ditekan */ },
         colors = CardDefaults.cardColors(
@@ -452,11 +537,10 @@ fun ScheduleRow(schedule: ScheduleItem, navController: NavController) {
                     Button(
                         onClick = { navController.navigate("event_detail_screen") },
                         modifier = Modifier
-                            .padding(0.dp) // Padding disesuaikan supaya tombol lebih padat
-                            .fillMaxSize() // Memastikan tombol memenuhi ruang
-                            .clip(RoundedCornerShape(12.dp)), // Sudut tombol melengkung
+                            .fillMaxSize(), // Memastikan tombol memenuhi ruang
+                        shape = RoundedCornerShape(12.dp), // Sudut tombol melengkung
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFB4DBFF), // Warna latar tombol
+                            containerColor = Color.Transparent, // Warna latar belakang tombol
                             contentColor = Color(0xFF007BFF) // Warna teks di dalam tombol
                         )
                     ) {
@@ -536,10 +620,11 @@ fun generateDaysInMonth(month: Int, year: Int): List<Pair<String, String>> {
     return daysList
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
     val navController = rememberNavController()
-    HomeScreen(navController = navController)
+    HomeScreen(
+        navController = navController
+    )
 }
