@@ -1,5 +1,3 @@
-package aps.tepatif
-
 import LoginScreen
 import SignUpScreen
 import androidx.compose.foundation.border
@@ -11,16 +9,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,6 +41,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
@@ -46,87 +50,118 @@ import androidx.navigation.compose.rememberNavController
 fun OTPValidationScreen(navController: NavController) {
     var otp by remember { mutableStateOf(listOf("", "", "", "")) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top // Keep other content at the top
-    ) {
-        Spacer(modifier = Modifier.height(300.dp))
-        // Judul OTP
-        Text(
-            text = "Enter confirmation code",
-            style = TextStyle(
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            ),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        // Deskripsi OTP
-        Text(
-            text = "A 4-digit code was sent to name@gmail.com",
-            style = TextStyle(
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Normal,
-                color = Color.Gray
-            ),
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
+    val constraints = ConstraintSet {
+        val otp = createRefFor("otp")
+        val button = createRefFor("button")
 
-        // Kotak Input OTP
-        OtpTextField(
-            otpText = otp,
-            onOtpTextChange = { otp = it },
-            otpCount = 4,
-            modifier = Modifier.fillMaxWidth()
-        )
+        constrain(otp) {
+            centerVerticallyTo(parent)
+//            top.linkTo(parent.top)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
 
-        Spacer(modifier = Modifier.weight(1f)) // This will push the buttons to the bottom
+        constrain(button) {
+            bottom.linkTo(parent.bottom, margin = 16.dp)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+    }
 
-        // Tombol Resend Code
-        TextButton(
-            onClick = { /* Logic to resend OTP */ },
-            modifier = Modifier.padding(top = 24.dp)
+    ConstraintLayout(constraintSet = constraints, modifier = Modifier.fillMaxSize()) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .layoutId("otp"),
+//                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Resend Code",
+                text = "Enter confirmation code",
                 style = TextStyle(
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Blue
-                )
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                ),
+                modifier = Modifier.layoutId("detailTextBold").padding(bottom = 8.dp)
+            )
+
+            Text(
+                text = "A 4-digit code was sent to \n name@gmail.com",
+                style = TextStyle(
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center
+                ),
+                modifier = Modifier.layoutId("detailText").padding(bottom = 24.dp)
+            )
+
+            OtpTextField(
+                otpText = otp,
+                onOtpTextChange = { otp = it },
+                otpCount = 4,
+                modifier = Modifier.fillMaxWidth().layoutId("otpField")
             )
         }
 
-        // Tombol Continue
-        Button(
-            onClick = {
-                val otpValue = otp.joinToString("")
-                println("Entered OTP: $otpValue")
-                navController.navigate("next_screen")
-            },
+        Column (
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-                .height(48.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF006FFD))
+                .fillMaxSize()
+                .layoutId("button")
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Continue",
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
+
+            Button(
+                onClick = { /* Resend Code */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+            ) {
+                Text(
+                    text = "Resend Code",
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF006FFD)
+                    )
                 )
-            )
+            }
+
+            Button(
+                onClick = {
+                    val otpValue = otp.joinToString("")
+                    navController.navigate("home_screen")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF006FFD)),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = "Continue",
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
+                )
+            }
         }
     }
 }
 
 
 // Komponen OtpTextField
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OtpTextField(
     otpText: List<String>,
@@ -138,7 +173,7 @@ fun OtpTextField(
     val focusRequesters = List(otpCount) { FocusRequester() }
 
     Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp), // Menambahkan jarak antar kolom
+        horizontalArrangement = Arrangement.spacedBy(8.dp), // Menambahkan jarak antar kolom
         modifier = modifier
             .fillMaxWidth()
             .wrapContentSize(Alignment.Center) // Membungkus konten dan memusatkannya
@@ -167,15 +202,19 @@ fun OtpTextField(
                 },
                 singleLine = true,
                 modifier = Modifier
-                    .width(60.dp)
-                    .height(60.dp)
+                    .size(48.dp)
                     .focusRequester(focusRequester), // Attach focusRequester
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 textStyle = TextStyle(
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
-                )
+                ),
+                shape = RoundedCornerShape(12.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    unfocusedBorderColor = Color(0xFFC5C6CC), // Warna border saat tidak fokus
+                    focusedBorderColor = Color(0xFF006FFD), // Warna border saat fokus
+                ),
             )
         }
     }
@@ -185,13 +224,6 @@ fun OtpTextField(
         focusRequesters[0].requestFocus()
     }
 }
-
-
-
-
-
-
-
 
 @Preview(showBackground = true)
 @Composable
