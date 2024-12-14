@@ -1,5 +1,4 @@
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +22,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,10 +43,10 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import aps.tepatif.ConfirmWindow
 import aps.tepatif.R
-import aps.tepatif.ScheduleCart
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun EventDetail(navController: NavController) {
@@ -67,11 +65,11 @@ fun EventDetail(navController: NavController) {
     val currentYear = calendar.get(Calendar.YEAR)
 
     // Format tanggal menjadi "Jun 10, 2024"
-    val dateFormat = java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
+    val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
     val formattedDate = dateFormat.format(currentTime)
 
     // Format waktu dengan AM/PM
-    val timeFormat = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault())
+    val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
     var formattedTime = timeFormat.format(currentTime)
 
     // Hapus nol di depan jika ada
@@ -297,7 +295,9 @@ fun EventDetail(navController: NavController) {
                         verticalArrangement = Arrangement.spacedBy(8.dp) // Jarak vertikal antar item
                     ) {
                         items(3) { // Mengulang 3 Card
-                            CustomCard() // Memanggil fungsi Card
+                            CustomCard(
+                                text = TODO()
+                            ) // Memanggil fungsi Card
                         }
                     }
                 }
@@ -381,50 +381,45 @@ fun EventDetail(navController: NavController) {
 }
 
 @Composable
-fun CustomCard() {
+fun CustomCard(text: String, modifier: Modifier = Modifier) {
     Card(
-        modifier = Modifier
-            .width(95.dp) // Lebar tetap
-            .height(45.dp) // Tinggi Card
-            .clip(RoundedCornerShape(topStart = 16.dp)) // Membuat sudut atas melengkung
-            .alpha(1f) // Mengatur alpha menjadi 1 (sepenuhnya terlihat)
+        modifier = modifier
+            .height(45.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .alpha(1f)
             .clickable { /* Action saat Card ditekan */ },
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFE6EFFE) // Warna latar belakang Card
+            containerColor = Color(0xFFE6EFFE)
         )
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start // Menempatkan elemen-elemen di kiri
+            horizontalArrangement = Arrangement.Start
         ) {
             Spacer(modifier = Modifier.height(12.dp))
-            // Menampilkan informasi jadwal di kiri
             Column(
                 modifier = Modifier
-                    .weight(1f) // Menggunakan ruang yang tersisa untuk teks
-                    .size(95.dp, 44.dp)
+                    .fillMaxHeight()
                     .padding(start = 8.dp),
-                verticalArrangement = Arrangement.Center, // Menyusun elemen secara vertikal di tengah
-                horizontalAlignment = Alignment.Start // Menyusun teks di kiri
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Spacer(modifier = Modifier.width(4.dp))
-                    // Menambahkan gambar di kiri
                     Image(
-                        painter = painterResource(id = R.drawable.ic_design_oval), // Ganti dengan id gambar Anda
+                        painter = painterResource(id = R.drawable.ic_design_oval),
                         contentDescription = "Design Icon",
                         modifier = Modifier
-                            .size(16.dp) // Ukuran gambar
-                            .padding(start = 2.dp, end = 2.dp) // Jarak antara gambar dan teks
+                            .size(16.dp)
+                            .padding(start = 2.dp, end = 2.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    // Teks pada bagian kiri
                     Column {
                         Text(
-                            text = "Design",
+                            text = text,
                             fontSize = 12.sp,
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
@@ -436,7 +431,6 @@ fun CustomCard() {
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
