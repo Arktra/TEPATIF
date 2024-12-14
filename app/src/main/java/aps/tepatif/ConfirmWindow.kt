@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -27,125 +31,107 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
-
 @Composable
 fun ConfirmWindow(
     navController: NavController,
-    message: String? = null,
-    onConfirm: (() -> Unit)? = null,
+    showDialog: Boolean,
+    title: String,
+    content: String,
+    confirmButtonText: String = "Yes",
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
     onCancel: (() -> Unit)? = null
 ) {
-    // Box with a translucent background to simulate modal behavior
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f)), // Adjust the alpha to show transparency
-        contentAlignment = Alignment.Center
-    ) {
-        // Dialog Box with shadow to simulate elevation
-        Card(
-            modifier = Modifier
-                .width(300.dp)
-                .height(150.dp), // Adjusted height to fit the content
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            )
-        ) {
+    AlertDialog(
+        shape = RoundedCornerShape(16.dp),
+        containerColor = Color.White,
+        onDismissRequest = onDismiss,
+
+        text = {
             Column(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .fillMaxHeight()
-                    .padding(bottom = 16.dp), // Add padding to ensure space at the bottom
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween // Ensures space is distributed appropriately
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Title Text
+                Text(text = title, fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.padding(vertical = 8.dp))
                 Text(
-                    text = "Confirmation",
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    text = content,
+                    textAlign = TextAlign.Center,
+                    color = Color(0xFF71727A),
                 )
+            }
+        },
+        confirmButton = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                if (onCancel != null) {
+                    Button(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(40.dp) // Set height to 40.dp
+                            .border(1.5.dp, Color(0xFF006FFD), RoundedCornerShape(12.dp))
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White, // Set container color
+                            contentColor = Color(0xFF006FFD) // Set text color
+                        ),
+                        onClick = {
+                            onCancel()
+                            onDismiss()
+                        }
+                    ) {
+                        Text("No")
+                    }
 
-                // Message Text
-                Text(
-                    text = message ?: "Are you sure?", // Default message if null
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    color = Color.Black
-                )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
 
-                // Buttons Row at the bottom
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier.fillMaxWidth()
+                Button(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(40.dp) // Set height to 40.dp
+                        .border(1.5.dp, Color(0xFF006FFD), RoundedCornerShape(12.dp))
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF006FFD), // Set container color
+                        contentColor = Color.White // Set text color
+                    ),
+                    onClick = {
+                        onConfirm()
+                        onDismiss()
+                    }
                 ) {
-                    // Cancel Button with Border
-                    onCancel?.let {
-                        TextButton(
-                            onClick = {
-                                onCancel() // Execute the cancellation logic
-                            },
-                            modifier = Modifier
-                                .border(
-                                    2.dp,
-                                    Color(0xFF006FFD),
-                                    RoundedCornerShape(12.dp)
-                                ) // Adding border to Cancel button
-                                .width(130.dp)
-                                .height(40.dp)
-                        ) {
-                            Text(text = "No", color = Color(0xFF006FFD), fontSize = 12.sp)
-                        }
-                    }
-
-                    // Confirm Button with Border
-                    onConfirm?.let {
-                        Box(
-                            modifier = Modifier
-                                .width(130.dp)
-                                .height(40.dp)
-                                .border(2.dp, Color(0xFF007BFF), RoundedCornerShape(12.dp)) // Apply border here
-                                .background(Color(0xFF006FFD), shape = RoundedCornerShape(12.dp)) // Apply background with same corner shape
-                                .clip(RoundedCornerShape(12.dp)) // Ensure clipping for the correct rounded corners
-                        ) {
-                            TextButton(
-                                onClick = {
-                                    onConfirm() // Execute the confirmation logic
-                                },
-                                modifier = Modifier.fillMaxSize(), // Fill the Box size
-                            ) {
-                                Text(text = "Yes", color = Color.White, fontSize = 12.sp)
-                            }
-                        }
-                    }
-
+                    Text(confirmButtonText)
                 }
             }
         }
-    }
+    )
 }
-
 
 
 @Preview(showBackground = true)
 @Composable
 fun ConfirmWindowPreview() {
     val navController = rememberNavController()
-    ConfirmWindow(navController = navController,
-        message = "Are you sure you want to proceed?",
-        onConfirm = {
-            // Action on confirmation
-            false // Hide the dialog after confirmation
-        },
-        onCancel = {
-            // Action on cancellation
-            false // Hide the dialog after cancellation
-        })
+    ConfirmWindow(
+        navController = navController,
+        showDialog = true,
+        onDismiss = { /*TODO*/ },
+        onConfirm = { /*TODO*/ },
+//        onCancel = { /*TODO*/ },
+        title = "Judul",
+        content = "Mohon isi semua data yang diperlukan"
+    )
+
 }
