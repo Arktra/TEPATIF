@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.navigation.NavController
+import aps.tepatif.ConfirmWindow
 import aps.tepatif.R
 import aps.tepatif.backend.BackEndAuth
 import kotlinx.coroutines.CoroutineScope
@@ -47,6 +48,8 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var loginError by remember { mutableStateOf<String?>(null) }
+    var showConfirm = remember { mutableStateOf(false) }
+    var id = 0
     val focusManager = LocalFocusManager.current
 
     val constraints = ConstraintSet {
@@ -69,7 +72,7 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
         }
 
         constrain(welcomeText) {
-            top.linkTo(logo.bottom, margin = 40.dp)
+            top.linkTo(logo.bottom, margin = 30.dp)
             start.linkTo(parent.start)
         }
 
@@ -130,7 +133,7 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
         Box(
             modifier = Modifier
                 .fillMaxWidth() // Menyebar penuh dari kiri ke kanan
-                .height(256.dp) // Menentukan tinggi background sesuai ukuran logo
+                .fillMaxHeight(1f/3.5f)// Menentukan tinggi background sesuai ukuran logo
                 .layoutId("logo")
                 .background(Color(0xFFEAF2FF), shape = RoundedCornerShape(12.dp)) // Background untuk logo
                 .padding(bottom = 16.dp) // Menambahkan padding di bawah background
@@ -167,7 +170,8 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
             ),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = Color.Gray, // Warna border saat tidak fokus
-                unfocusedLabelColor = Color.Gray // Warna label saat tidak fokus
+                unfocusedLabelColor = Color.Gray, // Warna label saat tidak fokus
+                focusedBorderColor = Color(0xFF006FFD)
             ),
             shape = RoundedCornerShape(12.dp),
         )
@@ -197,7 +201,8 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
             ),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = Color.Gray, // Warna border saat tidak fokus
-                unfocusedLabelColor = Color.Gray // Warna label saat tidak fokus
+                unfocusedLabelColor = Color.Gray, // Warna label saat tidak fokus
+                focusedBorderColor = Color(0xFF006FFD)
             ),
             shape = RoundedCornerShape(12.dp)
         )
@@ -213,37 +218,33 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
         )
 
         Button(
-            onClick = {
-                CoroutineScope(Dispatchers.IO).launch {
-                    val user = backEndAuth.login(email, password)
-                    if (user != null) {
-                        withContext(Dispatchers.Main) {
-                            navController.navigate("home_screen")
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            loginError = "Login failed. Please check your credentials."
-                        }
-                    }
-                }
-            },
-            modifier = Modifier.layoutId("loginButton").fillMaxWidth().height(48.dp).padding(start = 16.dp, end = 16.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF006FFD),
-                contentColor = Color.White
-            ),
-            shape = RoundedCornerShape(12.dp)
+                onClick = {
+//                    if (email.isEmpty() || password.isEmpty()) {
+//                        showConfirm.value = true
+//                        id = 1
+//                    } else {
+//                        CoroutineScope(Dispatchers.IO).launch {
+//                            val user = backEndAuth.login(email, password)
+//                            withContext(Dispatchers.Main) {
+//                                if (user != null) {
+                                    navController.navigate("home_screen")
+//                                } else {
+//                                    showConfirm.value = true
+//                                    id = 2
+//                                }
+//                            }
+//                        }
+//                    }
+                },
+        modifier = Modifier.layoutId("loginButton").fillMaxWidth().height(48.dp).padding(start = 16.dp, end = 16.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF006FFD),
+            contentColor = Color.White
+        ),
+        shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Login")
-        }
-
-        loginError?.let {
-            Text(
-                text = it,
-                color = Color.Red,
-                modifier = Modifier.layoutId("errorText").padding(start = 16.dp, end = 16.dp)
-            )
-        }
+        Text("Login")
+    }
 
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -303,6 +304,30 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
                     painter = painterResource(id = R.drawable.ic_facebook),
                     contentDescription = "Facebook",
                     tint = Color.Unspecified
+                )
+            }
+        }
+
+        if (showConfirm.value) {
+            if (id == 1) {
+                ConfirmWindow(
+                    navController = navController,
+                    showDialog = true,
+                    title = "Error",
+                    content = "Mohon isi semua data yang diperlukan",
+                    confirmButtonText = "OK",
+                    onDismiss = { showConfirm.value = false },
+                    onConfirm = { showConfirm.value = false },
+                )
+            } else {
+                ConfirmWindow(
+                    navController = navController,
+                    showDialog = true,
+                    title = "Error",
+                    content = "Email atau password salah\nMohon cek kembali",
+                    confirmButtonText = "OK",
+                    onDismiss = { showConfirm.value = false },
+                    onConfirm = { showConfirm.value = false },
                 )
             }
         }
