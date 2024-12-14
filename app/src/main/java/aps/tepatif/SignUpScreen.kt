@@ -134,7 +134,6 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
         constrain(checkedRow) {
             top.linkTo(confirmPasswordField.bottom, margin = 16.dp)
             start.linkTo(parent.start)
-            end.linkTo(parent.end)
         }
 
         constrain(signUpButton) {
@@ -184,7 +183,8 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
             ),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = Color.Gray, // Warna border saat tidak fokus
-                unfocusedLabelColor = Color.Gray // Warna label saat tidak fokus
+                unfocusedLabelColor = Color.Gray, // Warna label saat tidak fokus
+                focusedBorderColor = Color(0xFF006FFD)
             ),
             shape = RoundedCornerShape(12.dp)
         )
@@ -214,7 +214,8 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
             ),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = Color.Gray, // Warna border saat tidak fokus
-                unfocusedLabelColor = Color.Gray // Warna label saat tidak fokus
+                unfocusedLabelColor = Color.Gray, // Warna label saat tidak fokus
+                focusedBorderColor = Color(0xFF006FFD)
             ),
             shape = RoundedCornerShape(12.dp),
         )
@@ -250,7 +251,8 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
             ),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = Color.Gray, // Warna border saat tidak fokus
-                unfocusedLabelColor = Color.Gray // Warna label saat tidak fokus
+                unfocusedLabelColor = Color.Gray, // Warna label saat tidak fokus
+                focusedBorderColor = Color(0xFF006FFD)
             ),
             shape = RoundedCornerShape(12.dp)
         )
@@ -280,7 +282,8 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
             ),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = Color.Gray, // Warna border saat tidak fokus
-                unfocusedLabelColor = Color.Gray // Warna label saat tidak fokus
+                unfocusedLabelColor = Color.Gray, // Warna label saat tidak fokus
+                focusedBorderColor = Color(0xFF006FFD)
             ),
             shape = RoundedCornerShape(12.dp)
         )
@@ -294,17 +297,16 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
                     .size(24.dp)
                     .border(
                         width = 1.5.dp,
-                        color = Color(0xFFC5C6CC),
+                        color = if (isChecked) Color(0xFF006FFD) else Color(0xFFC5C6CC),
                         shape = RoundedCornerShape(6.dp)
                     )
-                    .clickable { isChecked = !isChecked }
+                    .clickable { isChecked = !isChecked },
             ) {
                 if (isChecked) {
                     Icon(
                         imageVector = Icons.Filled.Check,
                         contentDescription = "Checked",
                         tint = Color(0xFF006FFD),
-                        modifier = Modifier.align(Alignment.Center)
                     )
                 }
             }
@@ -343,16 +345,10 @@ fun SignUpScreen(navController: NavController, backEndAuth: BackEndAuth) {
                             val user = backEndAuth.register(email, password)
                             if (user != null) {
                                 withContext(Dispatchers.Main) {
-                                    navController.navigate("home_screen")
-                                }
-                            } else {
-                                withContext(Dispatchers.Main) {
-                                    registerError = "Registration failed. Please try again."
+                                    navController.navigate("otp_validation")
                                 }
                             }
                         }
-                    } else {
-                        registerError = "Passwords do not match."
                     }
                 },
                 modifier = Modifier
