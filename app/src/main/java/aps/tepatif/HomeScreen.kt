@@ -62,6 +62,7 @@ import aps.tepatif.AlertCategoryWindow
 import aps.tepatif.ConfirmWindow
 import aps.tepatif.R
 import java.util.Calendar
+import kotlin.text.get
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -85,19 +86,25 @@ fun HomeScreen(navController: NavController) {
 
     val todaySchedules = if (isToday) {
         // Menampilkan satu jadwal jika hari ini dipilih
-        listOf(schedules.first())
+        listOf(schedules[0], schedules[1], schedules[4])
     } else {
         emptyList()
     }
 
-    val novemberFirstSchedules = if (selectedDay.value == 1 && currentMonth.value == 11) {
-        // Menambahkan semua jadwal pada 1 November
-        schedules
+    val firstSchedules = if (selectedDay.value == 1 && currentMonth.value == calendar.get(Calendar.MONTH) + 1) {
+        // Menambahkan semua jadwal pada hari pertama bulan ini
+        listOf(schedules[2], schedules[4])
     } else {
         emptyList()
     }
 
-    val allSchedules = todaySchedules + novemberFirstSchedules
+    val secondSchedules = if (selectedDay.value == 3 && currentMonth.value == calendar.get(Calendar.MONTH) + 1) {
+        listOf(schedules[0], schedules[3], schedules[4])
+    } else {
+        emptyList()
+    }
+
+    val allSchedules = todaySchedules + firstSchedules + secondSchedules
 
     val focusManager = LocalFocusManager.current
 
