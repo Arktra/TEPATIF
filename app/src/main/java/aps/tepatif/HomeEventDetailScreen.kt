@@ -349,9 +349,9 @@ fun HomeEventDetail(navController: NavController) {
 
                                     Text(
                                         text = "None",
-                                        fontSize = 14.sp,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.Black
+                                        fontSize = 12.sp,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color(0xFF71727A)
                                     )
                                 }
                             }
