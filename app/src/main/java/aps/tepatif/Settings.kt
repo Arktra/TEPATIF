@@ -169,6 +169,7 @@ fun SettingsScreen(navController: NavController) {
                 Text(text = "Logout", fontSize = 16.sp, color = Color(0xFFEA2020))
             }
         }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth() // Lebar penuh
@@ -184,7 +185,7 @@ fun SettingsScreen(navController: NavController) {
                     .clickable(interactionSource = remember { MutableInteractionSource() },
                         indication = null, // Menghilangkan animasi warna abu-abu
                         onClick = {
-                            navController.navigate("new_event_screen")
+                            navController.navigate("event_detail_screen")
                             focusManager.clearFocus() // Menghapus fokus saat tombol ditekan
                         })
             )
@@ -208,7 +209,6 @@ fun SettingsScreen(navController: NavController) {
                     .clickable(interactionSource = remember { MutableInteractionSource() },
                         indication = null, // Menghilangkan animasi warna abu-abu
                         onClick = {
-                            navController.navigate("settings_screen")
                             focusManager.clearFocus() // Menghapus fokus saat tombol ditekan
                         })
             )
