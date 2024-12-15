@@ -335,7 +335,7 @@ fun EditEventScreen(navController: NavController) {
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp) // Jarak vertikal antar item
                 ) {
-                    val cards = listOf("Bruh", "Bruh", "Bruh", "Bruh") // Example list of cards
+                    val cards = listOf("Work", "Study", "Hangout", "Exercise") // Example list of cards
                     cards.chunked(3).forEach { rowCards ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
