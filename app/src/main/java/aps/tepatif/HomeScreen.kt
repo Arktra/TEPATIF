@@ -61,7 +61,6 @@ import androidx.navigation.compose.rememberNavController
 import aps.tepatif.AlertCategoryWindow
 import aps.tepatif.ConfirmWindow
 import aps.tepatif.R
-import aps.tepatif.ScheduleCart
 import java.util.Calendar
 
 @Composable
