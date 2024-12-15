@@ -219,22 +219,22 @@ fun LoginScreen(navController: NavController, backEndAuth: BackEndAuth) {
 
         Button(
                 onClick = {
-//                    if (email.isEmpty() || password.isEmpty()) {
-//                        showConfirm.value = true
-//                        id = 1
-//                    } else {
-//                        CoroutineScope(Dispatchers.IO).launch {
-//                            val user = backEndAuth.login(email, password)
-//                            withContext(Dispatchers.Main) {
-//                                if (user != null) {
+                    if (email.isEmpty() || password.isEmpty()) {
+                        showConfirm.value = true
+                        id = 1
+                    } else {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val user = backEndAuth.login(email, password)
+                            withContext(Dispatchers.Main) {
+                                if (user != null) {
                                     navController.navigate("home_screen")
-//                                } else {
-//                                    showConfirm.value = true
-//                                    id = 2
-//                                }
-//                            }
-//                        }
-//                    }
+                                } else {
+                                    showConfirm.value = true
+                                    id = 2
+                                }
+                            }
+                        }
+                    }
                 },
         modifier = Modifier.layoutId("loginButton").fillMaxWidth().height(48.dp).padding(start = 16.dp, end = 16.dp),
         colors = ButtonDefaults.buttonColors(
