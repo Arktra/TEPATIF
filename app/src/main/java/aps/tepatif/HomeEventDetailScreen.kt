@@ -226,6 +226,52 @@ fun HomeEventDetail(navController: NavController) {
                             verticalArrangement = Arrangement.Center, // Menyusun elemen secara vertikal di tengah
                             horizontalAlignment = Alignment.Start // Menyusun teks di kiri
                         ) {
+                            Text(
+                                text = "Lokasi",
+                                fontSize = 14.sp,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Ini merupakan lokasi dari event",
+                                fontSize = 12.sp,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color(0xFF71727A),
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                    }
+                }
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth() // Lebar penuh
+                        .padding(bottom = 16.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .height(72.dp) // Tinggi Card
+                        .alpha(1f) // Mengatur alpha menjadi 1 (sepenuhnya terlihat)
+                        .clickable { /* Action saat Card ditekan */ },
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFF8F9FE) // Warna latar belakang Card
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start // Menempatkan elemen-elemen di kiri
+                    ) {
+                        // Menampilkan informasi jadwal di kiri
+                        Column(
+                            modifier = Modifier
+                                .weight(1f) // Menggunakan ruang yang tersisa untuk teks
+                                .fillMaxHeight()
+                                .padding(start = 8.dp),
+                            verticalArrangement = Arrangement.Center, // Menyusun elemen secara vertikal di tengah
+                            horizontalAlignment = Alignment.Start // Menyusun teks di kiri
+                        ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -245,6 +291,66 @@ fun HomeEventDetail(navController: NavController) {
                                         fontSize = 14.sp,
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Bold,
+                                        color = Color.Black
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth() // Lebar penuh
+                        .padding(bottom = 16.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .height(72.dp) // Tinggi Card
+                        .alpha(1f) // Mengatur alpha menjadi 1 (sepenuhnya terlihat)
+                        .clickable { /* Action saat Card ditekan */ },
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFF8F9FE) // Warna latar belakang Card
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start // Menempatkan elemen-elemen di kiri
+                    ) {
+                        // Menampilkan informasi jadwal di kiri
+                        Column(
+                            modifier = Modifier
+                                .weight(1f) // Menggunakan ruang yang tersisa untuk teks
+                                .fillMaxHeight()
+                                .padding(start = 8.dp),
+                            verticalArrangement = Arrangement.Center, // Menyusun elemen secara vertikal di tengah
+                            horizontalAlignment = Alignment.Start // Menyusun teks di kiri
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Menambahkan gambar di kiri
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_repeat_grey), // Ganti dengan id gambar Anda
+                                    contentDescription = "Reminder Icon",
+                                    modifier = Modifier
+                                        .size(48.dp) // Ukuran gambar
+                                        .padding(end = 8.dp) // Jarak antara gambar dan teks
+                                )
+
+                                // Teks pada bagian kiri
+                                Column {
+                                    Text(
+                                        text = "Repeat",
+                                        fontSize = 14.sp,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.Black
+                                    )
+
+                                    Text(
+                                        text = "None",
+                                        fontSize = 14.sp,
+                                        style = MaterialTheme.typography.bodyMedium,
                                         color = Color.Black
                                     )
                                 }
@@ -285,7 +391,7 @@ fun HomeEventDetail(navController: NavController) {
                             verticalArrangement = Arrangement.spacedBy(8.dp) // Jarak vertikal antar item
                         ) {
                             val cards =
-                                listOf("Bruh", "Bruh", "Bruh", "Bruh") // Example list of cards
+                                listOf("Work", "Study", "Hangout", "Exercise") // Example list of cards
                             cards.chunked(2).forEach { rowCards ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
