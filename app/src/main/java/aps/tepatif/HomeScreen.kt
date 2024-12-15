@@ -414,7 +414,7 @@ fun HomeScreen(navController: NavController) {
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null, // Menghilangkan animasi warna abu-abu
                             onClick = {
-                                navController.navigate("new_event_screen")
+                                navController.navigate("event_detail_screen")
                                 focusManager.clearFocus() // Menghapus fokus saat tombol ditekan
                             }
                         )
@@ -429,7 +429,6 @@ fun HomeScreen(navController: NavController) {
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null, // Menghilangkan animasi warna abu-abu
                             onClick = {
-                                navController.navigate("home_screen")
                                 focusManager.clearFocus() // Menghapus fokus saat tombol ditekan
                             }
                         )
@@ -535,7 +534,7 @@ fun ScheduleRow(schedule: ScheduleItem, navController: NavController) {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     Button(
-                        onClick = { navController.navigate("event_detail_screen") },
+                        onClick = { navController.navigate("home_event_detail_screen") },
                         modifier = Modifier
                             .fillMaxSize(), // Memastikan tombol memenuhi ruang
                         shape = RoundedCornerShape(12.dp), // Sudut tombol melengkung
