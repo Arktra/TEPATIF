@@ -199,7 +199,6 @@ fun OtpTextField(
                     .focusRequester(focusRequester), // Attach focusRequester
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 textStyle = TextStyle(
-                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 ),
