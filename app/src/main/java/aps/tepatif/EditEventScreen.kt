@@ -54,7 +54,10 @@ import androidx.navigation.compose.rememberNavController
 import aps.tepatif.AlertCategoryWindow
 import aps.tepatif.ConfirmWindow
 import aps.tepatif.R
-import aps.tepatif.ScheduleCart
+import aps.tepatif.ReminderOptionsWindow
+import aps.tepatif.RepeatOptionsWindow
+import aps.tepatif.SelectDateWindow
+import aps.tepatif.SelectTimeWindow
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -94,7 +97,10 @@ fun EditEventScreen(navController: NavController) {
         remember { mutableStateListOf("Design", "Work", "Personal") } // Daftar kategori
     var newCategoryName by remember { mutableStateOf("") } // Untuk nama kategori baru
 
+    var showTimeWindow = remember { mutableStateOf(false) }
     var showAddCategoryDialog = remember { mutableStateOf(false) }
+    var showReminderOptions = remember { mutableStateOf(false) }
+    var showRepeatOptions = remember { mutableStateOf(false) }
     var showChangeConfirm = remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
@@ -228,7 +234,8 @@ fun EditEventScreen(navController: NavController) {
                     },
                     modifier = Modifier
                         .height(34.dp)
-                        .width(123.dp),
+                        .width(123.dp)
+                        .padding(end = 8.dp),
                     shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEEEEEF)),
                     contentPadding = PaddingValues(6.dp)
@@ -241,10 +248,8 @@ fun EditEventScreen(navController: NavController) {
                     )
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
-
                 Button(
-                    onClick = { /* aksi yang ingin dijalankan saat button ditekan */ },
+                    onClick = { showTimeWindow.value = true },
                     modifier = Modifier
                         .height(34.dp)
                         .width(86.dp),
@@ -281,7 +286,8 @@ fun EditEventScreen(navController: NavController) {
                     },
                     modifier = Modifier
                         .height(34.dp)
-                        .width(123.dp),
+                        .width(123.dp)
+                        .padding(end = 8.dp),
                     shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEEEEEF)),
                     contentPadding = PaddingValues(6.dp)
@@ -294,10 +300,8 @@ fun EditEventScreen(navController: NavController) {
                     )
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
-
                 Button(
-                    onClick = { /* aksi yang ingin dijalankan saat button ditekan */ },
+                    onClick = { showTimeWindow.value = true },
                     modifier = Modifier
                         .height(34.dp)
                         .width(86.dp),
@@ -441,7 +445,7 @@ fun EditEventScreen(navController: NavController) {
                             ) // Menambahkan border dan warna pada border
                             .width(66.dp)
                             .height(40.dp)
-                            .clickable { /* Action untuk detail kanan */ }
+                            .clickable { showReminderOptions.value = true }
                             .padding(4.dp) // Menambahkan padding sekitar tombol detail
                     ) {
                         // Menampilkan teks pada Card Detail
@@ -530,7 +534,7 @@ fun EditEventScreen(navController: NavController) {
                             ) // Menambahkan border dan warna pada border
                             .width(66.dp)
                             .height(40.dp)
-                            .clickable { /* Action untuk detail kanan */ }
+                            .clickable { showRepeatOptions.value = true }
                             .padding(4.dp) // Menambahkan padding sekitar tombol detail
                     ) {
                         // Menampilkan teks pada Card Detail
@@ -568,10 +572,9 @@ fun EditEventScreen(navController: NavController) {
     }
 
     if (selected.value) {
-        ScheduleCart(
+        SelectDateWindow(
             navController = navController,
             clicked = { selectedDate ->
-
                 if (isStartSelected) {
                     startDate = selectedDate  // Update Start Date
                     isStartSelected = false
@@ -579,6 +582,15 @@ fun EditEventScreen(navController: NavController) {
                     endDate = selectedDate  // Update End Date
                 }
                 selected.value = false // Close the calendar
+            }
+        )
+    }
+
+    if (showTimeWindow.value) {
+        SelectTimeWindow(
+            navController = navController,
+            clicked = {
+                showTimeWindow.value = false
             }
         )
     }
@@ -591,6 +603,22 @@ fun EditEventScreen(navController: NavController) {
             onDismiss = { showAddCategoryDialog.value = false },
             onConfirm = { showAddCategoryDialog.value = false },
             onCancel = { showAddCategoryDialog.value = false }
+        )
+    }
+
+    if (showReminderOptions.value) {
+        ReminderOptionsWindow(
+            navController = navController,
+            onDismiss = { showReminderOptions.value = false },
+            onConfirm = { showReminderOptions.value = false }
+        )
+    }
+
+    if (showRepeatOptions.value) {
+        RepeatOptionsWindow(
+            navController = navController,
+            onDismiss = { showRepeatOptions.value = false },
+            onConfirm = { showRepeatOptions.value = false }
         )
     }
 
