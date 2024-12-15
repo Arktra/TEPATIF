@@ -43,7 +43,7 @@ fun ConfirmWindow(
     navController: NavController,
     showDialog: Boolean,
     title: String,
-    content: String,
+    content: String? = null,
     confirmButtonText: String = "Yes",
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
@@ -60,12 +60,14 @@ fun ConfirmWindow(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = title, fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.padding(vertical = 8.dp))
-                Text(
-                    text = content,
-                    textAlign = TextAlign.Center,
-                    color = Color(0xFF71727A),
-                )
+                Text(text = title, fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.padding(vertical = 8.dp), textAlign = TextAlign.Center)
+                if(content != null) {
+                    Text(
+                        text = content,
+                        textAlign = TextAlign.Center,
+                        color = Color(0xFF71727A),
+                    )
+                }
             }
         },
         confirmButton = {
