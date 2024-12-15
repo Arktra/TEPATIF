@@ -1,6 +1,8 @@
 package aps.tepatif
 
+import EditEventScreen
 import EventDetail
+import HomeEventDetail
 import aps.tepatif.backend.BackEndAuth
 
 import HomeScreen
@@ -45,16 +47,20 @@ class MainActivity : ComponentActivity() {
                         NewEvent(navController = navController)
                     }
 
-                    composable("event_detail_screen") {
-                        EventDetail(navController = navController)
+                    composable("home_event_detail_screen") {
+                        HomeEventDetail(navController = navController)
                     }
 
-                    composable("edit_screen") {
-                        EditScreen(navController = navController)
+                    composable("edit_event_screen") {
+                        EditEventScreen(navController = navController)
                     }
 
                     composable("settings_screen") {
                         SettingsScreen(navController = navController)
+                    }
+
+                    composable("event_detail_screen") {
+                        EventDetail(navController = navController)
                     }
                 }
             }
